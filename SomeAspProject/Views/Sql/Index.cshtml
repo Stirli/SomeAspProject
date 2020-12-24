@@ -1,8 +1,78 @@
-﻿@{
+﻿@using SomeAspProject.Services.Database;
+@model DatabaseRequestResult
+@{
     ViewData["Title"] = "Sql Page";
 }
-
+<h1 class="display-4">
+    Sql request sending
+</h1>
+<small class="text-muted">Send your request now!</small>
 <form>
-    <div></div>
-    <div><input type="button" value="Send request" /></div>
+    <div class="form-row">
+        <div class="col-auto">
+            <label class="col-form-label font-weight-bolder" for="req">Sql request:</label>
+        </div>
+
+        <div class="col">
+            <input id="req" name="req" value="@ViewBag.SqlRequest" class="form-control" placeholder="select * from Orders" required />
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" asp-controller="Sql" asp-action="SendRequest" class="btn btn-primary">Send request</button>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="form-group mt-3">
+            @switch (Model)
+            {
+                case DatabaseRequestResult result when !result.IsSuccess:
+                    <div class="text-danger text-center border border-danger p-4">
+                        <text>Unecpected error:  @result.InnerException.Message</text>
+                    </div>
+                    break;
+                case SelectRequestResult tableResult:
+                    {
+                        <table class="table table-bordered table-hover" cellspacing='0'>
+                            <thead class="thead-dark">
+                                <tr>
+                                    @foreach (var th in tableResult.Headers)
+                                    {
+                                        <th>@th.Name</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tr in tableResult.Rows)
+                                {
+                                    <tr>
+                                        @foreach (var td in tr)
+                                        {
+                                            <td>@td</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    break;
+                case UpdateRequestResult result:
+                    {
+                        <div class="text-success text-center border border-success p-4">
+                            @if (result.Number > -1)
+                            {
+                                <text>Rows updated: @result.Number</text>
+                            }
+                            else
+                            {
+
+                                <text>Success</text>
+                            }
+                        </div>
+                    }
+                    break;
+            }
+        </div>
+    }
 </form>
