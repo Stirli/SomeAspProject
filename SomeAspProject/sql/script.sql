@@ -36,3 +36,5 @@ selecT * from Orders
 SELECT Orders.Id, Customers.Name AS 'Customer.Name', Items.Name AS 'Item.Name' FROM
 Orders LEFT JOIN Customers ON CustomerId = Customers.Id
        LEFT JOIN Items ON ItemId = Items.Id
+
+       Select 100 union select 0

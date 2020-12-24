@@ -30,8 +30,6 @@ namespace SomeAspProject.Services.Database.AdoDotNet
                 SqlCommand sqlCommand = new SqlCommand(request, _sqlConnection);
                 await _sqlConnection.OpenAsync();
 
-                if (new Regex(@"^\s*([Ss][Ee][Ll][Ee][Cc][Tt] | [Ee][Xx][Ee][Cc])").Match(request).Success)
-                {
                     var reader = await sqlCommand.ExecuteReaderAsync();
                     var headers = reader.GetColumnSchema().Select(c => new ColumnDescription { DataType = c.DataType, Name = c.ColumnName }).ToArray();
                     var rows = new List<object[]>();
@@ -43,14 +41,12 @@ namespace SomeAspProject.Services.Database.AdoDotNet
                         rows.Add(buffer);
                     }
 
-                    result = new SelectRequestResult(headers, rows);
-                }
-
-                else
+                result = new DatabaseRequestResult()
                 {
-                    int number = await sqlCommand.ExecuteNonQueryAsync();
-                    result = new UpdateRequestResult(number);
-                }
+                    RecordsAffected = reader.RecordsAffected,
+                    Headers = headers,
+                    Rows = rows
+                };
             }
             catch(Exception ex)
             {
