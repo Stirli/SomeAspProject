@@ -18,7 +18,7 @@ namespace SomeAspProject.Services.Database.AdoDotNet
 
         public void Dispose()
         {
-            _sqlConnection.Close();
+            _sqlConnection.Dispose();
         }
 
         public async Task<DatabaseRequestResult> SendRequestAsync(string request)
